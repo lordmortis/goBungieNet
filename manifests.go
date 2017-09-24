@@ -27,7 +27,7 @@ func ManifestUpdate() error {
   response, err := get("/Destiny2/Manifest/")
   if (err != nil) { return err }
 
-  if response.ErrorCode != None && response.ErrorCode != Success {
+  if response.ErrorCode.isError() {
     return errors.New(fmt.Sprintf("Error: %s", response.ErrorCode))
   }
 

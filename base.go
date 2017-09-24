@@ -11,7 +11,7 @@ import (
 const urlBase string = "https://bungie.net/Platform"
 
 type Response struct {
-  Response map[string]interface{}
+  Response interface{}
   ErrorCode errorCode
   ThrottleSeconds int
   ErrorStatus string
@@ -55,7 +55,9 @@ func getResponse(reader io.Reader) (*Response, error) {
   decoder := json.NewDecoder(reader)
   var response Response
   err := decoder.Decode(&response)
-  if (err != nil) { return nil, err }
+  if (err != nil) {
+    return nil, errors.New("Decoder Error: " + err.Error())
+  }
 
   return &response, nil
 }
