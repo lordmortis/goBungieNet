@@ -64,11 +64,16 @@ func ManifestUpdate() error {
     if err != nil { return err }
   }
 
+  // Hmm, there's a bug here, only do english for now...
+  /*
   for language, path := range (newManifest.WorldContentPaths) {
     outputPath := fmt.Sprintf("/WorldContent-%s.sqlite", language)
     err = manifestExtractToFile(path, outputPath)
     if err != nil { return err }
-  }
+  }*/
+
+  err = manifestExtractToFile(newManifest.WorldContentPaths["en"], "/WorldContent-en.sqlite")
+  if err != nil { return err }
 
   fmt.Printf("Updating to Manifest: %s\n", newManifest.Version)
 
