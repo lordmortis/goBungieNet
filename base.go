@@ -19,6 +19,21 @@ type Response struct {
   MessageData map[string]string
 }
 
+type PrivacySetting int
+
+const (
+  PrivacyNone PrivacySetting = 0
+  PrivacyPublic = 1
+  PrivacyPrivate = 2
+)
+
+type DestinyVersion int
+
+const (
+  VersionNone DestinyVersion = 0
+  VersionDestiny2 = 1
+)
+
 var (
   ApiKey string
 )

@@ -3,8 +3,6 @@ package goBungieNet
 import (
   "fmt"
   "errors"
-
-  "github.com/mitchellh/mapstructure"
 )
 
 type BungieMembershipType int
@@ -23,7 +21,7 @@ type UserInfo struct {
   IconPath string
   SupplementalDisplayName string
   MembershipType BungieMembershipType
-  MembershipId string
+  MembershipId int64
   DisplayName string
 }
 
@@ -40,9 +38,10 @@ func FindDestinyUser(displayName string, networkType BungieMembershipType) (*[]U
 
   var info []UserInfo
 
-  err = mapstructure.Decode(response.Response, &info)
+  err = decode(response.Response, &info)
   if err != nil {
     return nil, errors.New("Could not decode response: " + err.Error())
   }
   return &info, err
 }
+
