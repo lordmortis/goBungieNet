@@ -8,7 +8,8 @@ import (
 //  "fmt"
 )
 
-const urlBase string = "https://bungie.net/Platform"
+const serverBase string = "https://bungie.net"
+const apiBase string = serverBase + "/Platform"
 
 type Response struct {
   Response interface{}
@@ -59,7 +60,7 @@ func get(endpoint string) (*Response, error) {
 
 func setupClient(method string, endpoint string, body io.Reader) (*http.Request, error) {
   if ApiKey == "" { return nil, errors.New("No Api Key provided") }
-  request, err := http.NewRequest(method, urlBase + endpoint, body)
+  request, err := http.NewRequest(method, apiBase + endpoint, body)
   if (err == nil) {
     request.Header.Add("X-API-Key", ApiKey)
   }

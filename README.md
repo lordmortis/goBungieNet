@@ -12,7 +12,8 @@ You will need a [properly setup](https://golang.org/doc/install) Go development 
 
 Once you have your GOPATH setup as above you should:
 
-  1. `github.com/mitchellh/mapstructure`
+  1. `go get github.com/mitchellh/mapstructure`
+  2. `go get github.com/mattn/go-sqlite3`
 
 If you are testing with the main.go file you should have a registered API key.
 
