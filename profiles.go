@@ -127,7 +127,7 @@ func GetProfile(membershipID int64, networkType BungieMembershipType, components
     if (index + 1 == len(components)) {
       componentString += fmt.Sprintf("%d", component)
     } else {
-      componentString += fmt.Sprintf("%s,", component)
+      componentString += fmt.Sprintf("%d,", component)
     }
   }
 
@@ -138,7 +138,8 @@ func GetProfile(membershipID int64, networkType BungieMembershipType, components
   }
 
   if response.ErrorCode.isError() {
-    return nil, errors.New("Response Error: " + string(response.ErrorCode))
+    errorString := fmt.Sprintf("Response Error: %d", response.ErrorCode)
+    return nil, errors.New(errorString)
   }
 
   var profileResponse GetProfileResponse
