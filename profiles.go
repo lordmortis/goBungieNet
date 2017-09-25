@@ -28,26 +28,9 @@ type SingleProfile struct {
   Privacy PrivacySetting
 }
 
-type SingleActivities struct {
-  Data map[int64]CharacterActivities
-  Privacy PrivacySetting
-}
-
 type SingleCharacters struct {
   Data map[int64]Character
   Privacy PrivacySetting
-}
-
-type CharacterActivities struct {
-  AvailableActivities []Activity
-  DateActivityStarted time.Time
-  CurrentActivityHash uint32
-  CurrentActivityModeHash uint32
-  CurrentActivityModeType ActivityMode
-  CurrentActivityModeHashes []uint32
-  CurrentActivityModeTypes []ActivityMode
-  CurrentPlaylistActibityHash uint32
-  LastCompletedStoryHash uint32
 }
 
 type Character struct {
