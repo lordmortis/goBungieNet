@@ -21,7 +21,7 @@ type UserInfo struct {
   IconPath string
   SupplementalDisplayName string
   MembershipType BungieMembershipType
-  MembershipId int64
+  MembershipID int64
   DisplayName string
 }
 

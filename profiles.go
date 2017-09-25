@@ -9,7 +9,7 @@ import (
 
 type GetProfileResponse struct {
   Characters interface{}
-  CharacterActivities interface{}
+  CharacterActivities SingleActivities
   CharacterEquipment interface{}
   CharacterInventories interface{}
   CharacterKiosks interface{}
@@ -28,14 +28,35 @@ type SingleProfile struct {
   Privacy PrivacySetting
 }
 
+type SingleActivities struct {
+  Data map[int64]CharacterActivities
+  Privacy PrivacySetting
+}
+
+type CharacterActivities struct {
+  AvailableActivities []Activity
+  DateActivityStarted time.Time
+  CurrentActivityHash uint32
+  CurrentActivityModeHash uint32
+  CurrentActivityModeType ActivityMode
+  CurrentActivityModeHashes []uint32
+  CurrentActivityModeTypes []ActivityMode
+  CurrentPlaylistActibityHash uint32
+  LastCompletedStoryHash uint32
+}
+
+type Activity struct {
+
+}
+
 type DestinyProfile struct {
-  CharacterIds []int64
+  CharacterIDs []int64
   UserInfo UserInfo
   DateLastPlayed time.Time
   VersionsOwned DestinyVersion
 }
 
-func GetProfile(membershipID string, networkType BungieMembershipType, components []DestinyComponentType) (*GetProfileResponse, error) {
+func GetProfile(membershipID int64, networkType BungieMembershipType, components []DestinyComponentType) (*GetProfileResponse, error) {
   componentString := ""
 
   for index, component := range(components) {
@@ -46,7 +67,7 @@ func GetProfile(membershipID string, networkType BungieMembershipType, component
     }
   }
 
-  url := fmt.Sprintf("/Destiny2/%d/Profile/%s/?components=%s", networkType, membershipID, componentString)
+  url := fmt.Sprintf("/Destiny2/%d/Profile/%d/?components=%s", networkType, membershipID, componentString)
   response, err := get(url)
   if (err != nil) {
     return nil, errors.New("Get Error: " + err.Error())
@@ -63,5 +84,5 @@ func GetProfile(membershipID string, networkType BungieMembershipType, component
     return nil, errors.New("Could not decode response: " + err.Error())
   }
 
-  return nil, nil
+  return &profileResponse, nil
 }
