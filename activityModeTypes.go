@@ -1,9 +1,9 @@
 package goBungieNet
 
-type ActivityMode int
+type DestinyActivityMode int
 
 const (
-  ActivityModeNone ActivityMode = 0
+  ActivityModeNone DestinyActivityMode = 0
   ActivityModeStory = 2
   ActivityModeStrike = 3
   ActivityModeRaid = 4

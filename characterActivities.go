@@ -14,9 +14,9 @@ type CharacterActivities struct {
   DateActivityStarted time.Time
   CurrentActivityHash uint32
   CurrentActivityModeHash uint32
-  CurrentActivityModeType ActivityMode
+  CurrentActivityModeType DestinyActivityMode
   CurrentActivityModeHashes []uint32
-  CurrentActivityModeTypes []ActivityMode
+  CurrentActivityModeTypes []DestinyActivityMode
   CurrentPlaylistActibityHash uint32
   LastCompletedStoryHash uint32
 }

@@ -9,11 +9,18 @@ import (
   "net/http"
   "archive/zip"
   "bytes"
+  "database/sql"
 
-  "github.com/mitchellh/mapstructure"
+  _ "github.com/mattn/go-sqlite3"
+//  "github.com/mitchellh/mapstructure"
 )
 
-type Manifest struct {
+const manifestAssets = "Assets"
+const manifestClanBanner = "ClanBanner"
+const manifestGear = "Gear"
+const manifestWorld = "WorldContent"
+
+type manifestData struct {
   Version string
   AssetContentPath string `mapstructure:"mobileAssetContentPath"`
   ClanBannerDatabasePath string `mapstructure:"mobileClanBannerDatabasePath"`
@@ -22,23 +29,42 @@ type Manifest struct {
   WorldContentPaths map[string]string `mapstructure:"mobileWorldContentPaths"`
 }
 
+type DestinyDisplayProperties struct {
+  Description string
+  Name string
+  icon string
+  HasIcon bool
+}
+
+type DestinyItemQuantity struct {
+  ItemHash uint32
+  ItemInstanceID int64
+  Quantity int32
+}
+
+type manifest struct {
+  Version string
+}
+
 type GearAssetDatabase struct {
   Version int32
   Path string
 }
 
 var (
-  currentManifest Manifest
+  currentManifest manifest
   ManifestPath string
+  manifestDBs map[string]*sql.DB
 )
 
 func init() {
   currentManifest.Version = "No Manifest"
   ManifestPath = ""
+  manifestDBs = make(map[string]*sql.DB)
 }
 
 func ManifestUpdate() error {
-  response, err := get("/Destiny2/Manifest/")
+/*  response, err := get("/Destiny2/Manifest/")
   if (err != nil) { return err }
 
   if response.ErrorCode.isError() {
@@ -53,13 +79,13 @@ func ManifestUpdate() error {
   err = manifestLocationValid()
   if err != nil { return err }
 
-  err = manifestExtractToFile(newManifest.AssetContentPath, "/Assets.sqlite")
+  err = manifestExtractToFile(newManifest.AssetContentPath, manifestAssets)
   if err != nil { return err }
-  err = manifestExtractToFile(newManifest.ClanBannerDatabasePath, "/ClanBanner.sqlite")
+  err = manifestExtractToFile(newManifest.ClanBannerDatabasePath, manifestClanBanner)
   if err != nil { return err }
 
   for index, gearDatabase := range (newManifest.GearAssetDatabases) {
-    outputPath := fmt.Sprintf("/GearDatabase-%d-%d.sqlite", index, gearDatabase.Version)
+    outputPath := fmt.Sprintf("%s-%d", manifestGear, gearDatabase.Version)
     err = manifestExtractToFile(gearDatabase.Path, outputPath)
     if err != nil { return err }
   }
@@ -72,10 +98,12 @@ func ManifestUpdate() error {
     if err != nil { return err }
   }*/
 
-  err = manifestExtractToFile(newManifest.WorldContentPaths["en"], "/WorldContent-en.sqlite")
-  if err != nil { return err }
+  /*
+  outputPath := fmt.Sprintf("%s-%s", manifestWorld, "en")
+  err = manifestExtractToFile(newManifest.WorldContentPaths["en"], outputPath)
+  if err != nil { return err }*/
 
-  fmt.Printf("Updating to Manifest: %s\n", newManifest.Version)
+  //fmt.Printf("Updating to Manifest: %s\n", newManifest.Version)
 
   return nil
 }
@@ -94,23 +122,6 @@ func manifestLocationValid() error {
     return errors.New(errorString)
   }
   return nil
-}
-
-func test() {
-  File, err := os.Open("world_sql_content_c423afdd29d2f6acb8ac2c859aeb4958.content")
-  if err != nil { fmt.Printf("Couldn't open file! %s", err.Error()); return; }
-  buf := make([]byte, 1358990)
-  num, err1 := File.Read(buf)
-  if err1 != nil { fmt.Printf("Couldn't read input file! %s", err1.Error()); return; }
-  fmt.Printf("Read %d from file\n", num)
-
-  bufReader := bytes.NewReader(buf)
-
-  //var reader *zip.Reader
-  _, err = zip.NewReader(bufReader, 1358990)
-  if err != nil { fmt.Printf("Couldn't unzip file! %s", err.Error()); return; }
-
-  fmt.Printf("Read zip file!")
 }
 
 func manifestExtractToFile(urlPart string, path string) error {
@@ -134,10 +145,24 @@ func manifestExtractToFile(urlPart string, path string) error {
   if err != nil { return err }
 
   var writeFile *os.File
-  writeFile, err = os.Create(ManifestPath + path)
+  writeFilePath := fmt.Sprintf("%s/%s.sqlite", ManifestPath, path)
+  writeFile, err = os.Create(writeFilePath)
   if err != nil { return err }
 
   _, err = io.Copy(writeFile, zipOut)
 
   return nil
+}
+
+func manifestOpenData(dataFile string) (*sql.DB,error) {
+  if db, ok := manifestDBs[dataFile]; ok {
+    return db, nil
+  }
+
+  dbPath := fmt.Sprintf("%s/%s.sqlite", ManifestPath,dataFile)
+  db, err := sql.Open("sqlite3", dbPath)
+  if err != nil { return nil, err }
+
+  manifestDBs[dataFile] = db
+  return db, nil
 }
