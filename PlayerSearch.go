@@ -3,6 +3,7 @@ package goBungieNet
 import (
   "fmt"
   "errors"
+  "strings"
 )
 
 type BungieMembershipType int
@@ -16,6 +17,34 @@ const (
   NetworkBungieNext = 254
   NetworkAll = -1
 )
+
+func (atype BungieMembershipType)String() string {
+  switch(atype) {
+    case NetworkNone: return "None"
+    case NetworkXbox: return "Xbox Live"
+    case NetworkPsn: return "Playstation Network"
+    case NetworkBlizzard: return "Battle.Net"
+    case NetworkAll: return "All Networks"
+  }
+
+  return "Unknown"
+}
+
+func StringToBungieMembershipType(text string) BungieMembershipType {
+  accountTypeString := strings.ToLower(text)
+
+  if strings.HasPrefix(accountTypeString, "ps") {
+    return NetworkPsn
+  } else if strings.HasPrefix(accountTypeString, "xbox") {
+    return NetworkXbox
+  } else if strings.HasPrefix(accountTypeString, "battle") {
+    return NetworkBlizzard
+  } else if strings.HasPrefix(accountTypeString, "all") {
+    return NetworkAll
+  }
+
+  return NetworkNone
+}
 
 type UserInfo struct {
   IconPath string

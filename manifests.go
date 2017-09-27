@@ -10,9 +10,10 @@ import (
   "archive/zip"
   "bytes"
   "database/sql"
+  "strings"
 
   _ "github.com/mattn/go-sqlite3"
-//  "github.com/mitchellh/mapstructure"
+  "github.com/mitchellh/mapstructure"
 )
 
 const manifestAssets = "Assets"
@@ -42,8 +43,10 @@ type DestinyItemQuantity struct {
   Quantity int32
 }
 
-type manifest struct {
+type manifestInfo struct {
   Version string
+  Path string
+  DBs map[string]*sql.DB
 }
 
 type GearAssetDatabase struct {
@@ -52,30 +55,42 @@ type GearAssetDatabase struct {
 }
 
 var (
-  currentManifest manifest
-  ManifestPath string
-  manifestDBs map[string]*sql.DB
+  manifest manifestInfo
 )
 
 func init() {
-  currentManifest.Version = "No Manifest"
-  ManifestPath = ""
-  manifestDBs = make(map[string]*sql.DB)
+  manifest = manifestInfo{
+    Version: "None",
+    Path: "",
+    DBs: make(map[string]*sql.DB),
+  }
+}
+
+func SetManifestPath(path string) error {
+  if path == manifest.Path { return nil }
+  manifest.Path = path
+
+  err := loadManifestVersion()
+  return err
+}
+
+func ManifestVersion() string {
+  return manifest.Version
 }
 
 func ManifestUpdate() error {
-/*  response, err := get("/Destiny2/Manifest/")
+  response, err := get("/Destiny2/Manifest/")
   if (err != nil) { return err }
 
   if response.ErrorCode.isError() {
     return errors.New(fmt.Sprintf("Error: %s", response.ErrorCode))
   }
 
-  newManifest := Manifest{}
+  newManifest := manifestData{}
   err = mapstructure.Decode(response.Response, &newManifest)
   if err != nil { return err }
 
-  if newManifest.Version == currentManifest.Version { return nil }
+  if newManifest.Version == manifest.Version { return nil }
   err = manifestLocationValid()
   if err != nil { return err }
 
@@ -84,7 +99,7 @@ func ManifestUpdate() error {
   err = manifestExtractToFile(newManifest.ClanBannerDatabasePath, manifestClanBanner)
   if err != nil { return err }
 
-  for index, gearDatabase := range (newManifest.GearAssetDatabases) {
+  for _, gearDatabase := range (newManifest.GearAssetDatabases) {
     outputPath := fmt.Sprintf("%s-%d", manifestGear, gearDatabase.Version)
     err = manifestExtractToFile(gearDatabase.Path, outputPath)
     if err != nil { return err }
@@ -98,30 +113,78 @@ func ManifestUpdate() error {
     if err != nil { return err }
   }*/
 
-  /*
   outputPath := fmt.Sprintf("%s-%s", manifestWorld, "en")
   err = manifestExtractToFile(newManifest.WorldContentPaths["en"], outputPath)
-  if err != nil { return err }*/
+  if err != nil { return err }
 
-  //fmt.Printf("Updating to Manifest: %s\n", newManifest.Version)
+  manifest.Version = newManifest.Version
 
-  return nil
+  fmt.Printf("Manifest Version is now: %s", manifest.Version)
+
+  return saveManifestVersion()
 }
 
 func manifestLocationValid() error {
-  if ManifestPath == "" { return errors.New("ManifestPath not set.") }
+  if manifest.Path == "" { return errors.New("ManifestPath not set.") }
   var fileInfo os.FileInfo
 
-  fileInfo, err := os.Stat(ManifestPath)
+  fileInfo, err := os.Stat(manifest.Path)
   if err != nil {
-    errorString := fmt.Sprintf("ManifestPath '%s' does not exist.", ManifestPath)
+    errorString := fmt.Sprintf("ManifestPath '%s' does not exist.", manifest.Path)
     return errors.New(errorString)
   }
   if !fileInfo.IsDir() {
-    errorString := fmt.Sprintf("ManifestPath '%s' is not a directory.", ManifestPath)
+    errorString := fmt.Sprintf("ManifestPath '%s' is not a directory.", manifest.Path)
     return errors.New(errorString)
   }
   return nil
+}
+
+func loadManifestVersion() error {
+  err := manifestLocationValid()
+  if err != nil { return err }
+
+  manifestVersionPath := manifest.Path + "/Version"
+
+  var fileInfo os.FileInfo
+  fileInfo, err = os.Stat(manifestVersionPath)
+  if err != nil {
+    manifest.Version = "None"
+    return nil
+  }
+
+  if fileInfo.IsDir() {
+    errorString := fmt.Sprintf("'%s' - is not a file", manifestVersionPath)
+    return errors.New(errorString)
+  }
+
+  var data []byte
+  data, err = ioutil.ReadFile(manifestVersionPath)
+  if err != nil {
+    errorString := fmt.Sprintf("Could not read manifest version file '%s'", manifestVersionPath)
+    return errors.New(errorString)
+  }
+
+  manifest.Version = strings.Trim(string(data), " \n")
+  return nil
+}
+
+func saveManifestVersion() error {
+  err := manifestLocationValid()
+  if err != nil { return err }
+
+  manifestVersionPath := manifest.Path + "/Version"
+
+  var fileInfo os.FileInfo
+  fileInfo, err = os.Stat(manifestVersionPath)
+  if err == nil {
+    if fileInfo.IsDir() {
+      errorString := fmt.Sprintf("'%s' - is not a file", manifestVersionPath)
+      return errors.New(errorString)
+    }
+  }
+
+  return ioutil.WriteFile(manifestVersionPath, []byte(manifest.Version), os.FileMode(0600))
 }
 
 func manifestExtractToFile(urlPart string, path string) error {
@@ -145,7 +208,7 @@ func manifestExtractToFile(urlPart string, path string) error {
   if err != nil { return err }
 
   var writeFile *os.File
-  writeFilePath := fmt.Sprintf("%s/%s.sqlite", ManifestPath, path)
+  writeFilePath := fmt.Sprintf("%s/%s.sqlite", manifest.Path, path)
   writeFile, err = os.Create(writeFilePath)
   if err != nil { return err }
 
@@ -155,14 +218,14 @@ func manifestExtractToFile(urlPart string, path string) error {
 }
 
 func manifestOpenData(dataFile string) (*sql.DB,error) {
-  if db, ok := manifestDBs[dataFile]; ok {
+  if db, ok := manifest.DBs[dataFile]; ok {
     return db, nil
   }
 
-  dbPath := fmt.Sprintf("%s/%s.sqlite", ManifestPath,dataFile)
+  dbPath := fmt.Sprintf("%s/%s.sqlite", manifest.Path,dataFile)
   db, err := sql.Open("sqlite3", dbPath)
   if err != nil { return nil, err }
 
-  manifestDBs[dataFile] = db
+  manifest.DBs[dataFile] = db
   return db, nil
 }
