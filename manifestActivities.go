@@ -5,8 +5,6 @@ import (
   "errors"
   "time"
   "encoding/json"
-
-  "github.com/davecgh/go-spew/spew"
 )
 
 type DestinyActivityReward struct {
@@ -97,8 +95,6 @@ func ManifestActivityDefinition(languageCode string, activityHash uint32) (*Dest
   err = json.Unmarshal([]byte(jsonData), &result)
   if err != nil { return nil, err }
   result.ReleaseTime = time.Unix(int64(result.ReleaseTimeEpoch), 0)
-
-  spew.Dump(result)
 
   return &result, nil
 }
