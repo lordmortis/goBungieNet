@@ -37,3 +37,29 @@ const (
   ActivityModeTrialsOfTheNine = 39
   ActivityModeSocial = 40
 )
+
+func (mode DestinyActivityMode)String() string {
+  switch(mode) {
+    case ActivityModeNone: return "None"
+    case ActivityModeStory: return "Story"
+    case ActivityModeStrike: return "Strike"
+    case ActivityModeRaid: return "Raid"
+    case ActivityModeAllPvP: return "PvP"
+    case ActivityModePatrol: return "Patrol"
+    case ActivityModeAllPvE: return "PvE"
+    case ActivityModeControl: return "Control"
+    case ActivityModeClash: return "Clash"
+    case ActivityModeNightfall: return "Nightfall"
+    case ActivityModeHeroicNightfall: return "Nightfall Heroic"
+    case ActivityModeAllStrikes: return "Strikes"
+    case ActivityModeIronBanner: return "Iron Banner"
+    case ActivityModeSupremacy: return "Supremacy"
+    case ActivityModeSurvival: return "Survival"
+    case ActivityModeCountdown: return "Countdown"
+    case ActivityModeTrialsOfTheNine: return "Trials of the Nine"
+    case ActivityModeSocial: return "Social"
+  }
+
+  return "Unknown"
+}
+

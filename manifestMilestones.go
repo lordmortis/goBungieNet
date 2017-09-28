@@ -31,23 +31,61 @@ func (atype DestinyMilestoneType)String() string {
   return "Unknown"
 }
 
-type DestinyMilestoneQuestDefinition struct {
+type DestinyMilestoneQuestRewardItem struct {
+  ItemInstanceID int64
+  VendorHash uint32
+  VendorItemIndex int32
+  Quantity int32
+}
 
+type DestinyMilestoneQuestRewards struct {
+  Items []DestinyMilestoneQuestRewardItem
+}
+
+type DestinyMilestoneActivityDefinition struct {
+  BaseActivityHash uint32 `json:"conceptualActivityHash"`
+  Variants map[uint32]DestinyMilestoneActivityVariantDefinition
+}
+
+type DestinyMilestoneActivityVariantDefinition struct {
+  ActivityHash uint32
+  Order int32
+}
+
+type DestinyMilestoneQuestDefinition struct {
+  Activities map[uint32]DestinyMilestoneActivityDefinition
+  DisplayProperties DestinyDisplayProperties
+  QuestItemHash uint32
+  OverrideImage string
+  QuestRewards DestinyMilestoneQuestRewards
+}
+
+type DestinyMilestoneRewardEntry struct {
+  DisplayProperties DestinyDisplayProperties
+  Identifier string `json:"rewardEntryIdentifier"`
+  Items []DestinyItemQuantity
+  VendorHash uint32
+  Order int32
 }
 
 type DestinyMilestoneRewardCategory struct {
-
+  CategoryIdentifier string
+  DisplayProperties DestinyDisplayProperties
+  RewardEntries map[uint32]DestinyMilestoneRewardEntry
+  Order int32
 }
 
 type DestinyMilestoneVendor struct {
-
+  VendorHash uint32
 }
 
 type DestinyMilestoneValue struct {
-
+  DisplayProperties DestinyDisplayProperties
+  Key string
 }
 
 type DestinyMilestoneDefinition struct {
+  DisplayProperties DestinyDisplayProperties
   FriendlyName string
   HasPredictableDates bool
   Image string
@@ -62,13 +100,14 @@ type DestinyMilestoneDefinition struct {
   Redacted bool
 }
 
-func ManifestMilestoneDefinition(languageCode string, milestoneHash uint32) (*DestinyMilestoneDefinition, error) {
+func milestoneDefinition(languageCode string, milestoneHash uint32) (*DestinyMilestoneDefinition, error) {
   dataFile := fmt.Sprintf("%s-%s", manifestWorld, languageCode)
   db, err := manifestOpenData(dataFile)
   if err != nil { return nil, err }
 
   rows, err := db.Query("SELECT json FROM DestinyMilestoneDefinition WHERE id = $1", int32(milestoneHash))
   if err != nil { return nil, err }
+  defer rows.Close()
   if !rows.Next() { return nil, errors.New("No Results!") }
   var jsonData string
   err = rows.Scan(&jsonData)
@@ -80,3 +119,8 @@ func ManifestMilestoneDefinition(languageCode string, milestoneHash uint32) (*De
 
   return &result, nil
 }
+
+func (base *DestinyMilestone)Definition(languageCode string) (*DestinyMilestoneDefinition, error) {
+  return milestoneDefinition(languageCode, base.MilestoneHash)
+}
+
