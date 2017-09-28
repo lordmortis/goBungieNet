@@ -17,6 +17,10 @@ func decodeHook(f reflect.Type, t reflect.Type, data interface{}) (interface{}, 
     return strconv.ParseInt(data.(string), 10, 64)
   }
 
+  if t.Kind() == reflect.Uint32 && f.Kind() == reflect.String {
+    return strconv.ParseUint(data.(string), 10, 32)
+  }
+
   return data, nil
 }
 
