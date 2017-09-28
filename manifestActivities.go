@@ -91,7 +91,6 @@ func ManifestActivityDefinition(languageCode string, activityHash uint32) (*Dest
   if err != nil { return nil, err }
 
   result := DestinyActivity{}
-  result.ReleaseTimeEpoch = 10
   err = json.Unmarshal([]byte(jsonData), &result)
   if err != nil { return nil, err }
   result.ReleaseTime = time.Unix(int64(result.ReleaseTimeEpoch), 0)
