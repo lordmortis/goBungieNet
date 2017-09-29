@@ -3,61 +3,61 @@ package goBungieNet
 type DestinyActivityMode int
 
 const (
-  ActivityModeNone DestinyActivityMode = 0
-  ActivityModeStory = 2
-  ActivityModeStrike = 3
-  ActivityModeRaid = 4
-  ActivityModeAllPvP = 5
-  ActivityModePatrol = 6
-  ActivityModeAllPvE = 7
-  ActivityModeReserved9 = 9
-  ActivityModeControl = 10
-  ActivityModeReserved11 = 11
-  ActivityModeClash = 12
-  ActivityModeReserved13 = 13
-  ActivityModeReserved15 = 15
-  ActivityModeNightfall = 16
-  ActivityModeHeroicNightfall = 17
-  ActivityModeAllStrikes = 18
-  ActivityModeIronBanner = 19
-  ActivityModeReserved20 = 20
-  ActivityModeReserved21 = 21
-  ActivityModeReserved22 = 22
-  ActivityModeReserved24 = 24
-  ActivityModeReserved25 = 25
-  ActivityModeReserved26 = 26
-  ActivityModeReserved27 = 27
-  ActivityModeReserved28 = 28
-  ActivityModeReserved29 = 29
-  ActivityModeReserved30 = 30
-  ActivityModeSupremacy = 31
-  ActivityModeReserved32 = 32
-  ActivityModeSurvival = 37
-  ActivityModeCountdown = 38
-  ActivityModeTrialsOfTheNine = 39
-  ActivityModeSocial = 40
+  DestinyActivityModeNone DestinyActivityMode = 0
+  DestinyActivityModeStory = 2
+  DestinyActivityModeStrike = 3
+  DestinyActivityModeRaid = 4
+  DestinyActivityModeAllPvP = 5
+  DestinyActivityModePatrol = 6
+  DestinyActivityModeAllPvE = 7
+  DestinyActivityModeReserved9 = 9
+  DestinyActivityModeControl = 10
+  DestinyActivityModeReserved11 = 11
+  DestinyActivityModeClash = 12
+  DestinyActivityModeReserved13 = 13
+  DestinyActivityModeReserved15 = 15
+  DestinyActivityModeNightfall = 16
+  DestinyActivityModeHeroicNightfall = 17
+  DestinyActivityModeAllStrikes = 18
+  DestinyActivityModeIronBanner = 19
+  DestinyActivityModeReserved20 = 20
+  DestinyActivityModeReserved21 = 21
+  DestinyActivityModeReserved22 = 22
+  DestinyActivityModeReserved24 = 24
+  DestinyActivityModeReserved25 = 25
+  DestinyActivityModeReserved26 = 26
+  DestinyActivityModeReserved27 = 27
+  DestinyActivityModeReserved28 = 28
+  DestinyActivityModeReserved29 = 29
+  DestinyActivityModeReserved30 = 30
+  DestinyActivityModeSupremacy = 31
+  DestinyActivityModeReserved32 = 32
+  DestinyActivityModeSurvival = 37
+  DestinyActivityModeCountdown = 38
+  DestinyActivityModeTrialsOfTheNine = 39
+  DestinyActivityModeSocial = 40
 )
 
 func (mode DestinyActivityMode)String() string {
   switch(mode) {
-    case ActivityModeNone: return "None"
-    case ActivityModeStory: return "Story"
-    case ActivityModeStrike: return "Strike"
-    case ActivityModeRaid: return "Raid"
-    case ActivityModeAllPvP: return "PvP"
-    case ActivityModePatrol: return "Patrol"
-    case ActivityModeAllPvE: return "PvE"
-    case ActivityModeControl: return "Control"
-    case ActivityModeClash: return "Clash"
-    case ActivityModeNightfall: return "Nightfall"
-    case ActivityModeHeroicNightfall: return "Nightfall Heroic"
-    case ActivityModeAllStrikes: return "Strikes"
-    case ActivityModeIronBanner: return "Iron Banner"
-    case ActivityModeSupremacy: return "Supremacy"
-    case ActivityModeSurvival: return "Survival"
-    case ActivityModeCountdown: return "Countdown"
-    case ActivityModeTrialsOfTheNine: return "Trials of the Nine"
-    case ActivityModeSocial: return "Social"
+    case DestinyActivityModeNone: return "None"
+    case DestinyActivityModeStory: return "Story"
+    case DestinyActivityModeStrike: return "Strike"
+    case DestinyActivityModeRaid: return "Raid"
+    case DestinyActivityModeAllPvP: return "PvP"
+    case DestinyActivityModePatrol: return "Patrol"
+    case DestinyActivityModeAllPvE: return "PvE"
+    case DestinyActivityModeControl: return "Control"
+    case DestinyActivityModeClash: return "Clash"
+    case DestinyActivityModeNightfall: return "Nightfall"
+    case DestinyActivityModeHeroicNightfall: return "Nightfall Heroic"
+    case DestinyActivityModeAllStrikes: return "Strikes"
+    case DestinyActivityModeIronBanner: return "Iron Banner"
+    case DestinyActivityModeSupremacy: return "Supremacy"
+    case DestinyActivityModeSurvival: return "Survival"
+    case DestinyActivityModeCountdown: return "Countdown"
+    case DestinyActivityModeTrialsOfTheNine: return "Trials of the Nine"
+    case DestinyActivityModeSocial: return "Social"
   }
 
   return "Unknown"

@@ -74,10 +74,6 @@ type DestinyActivity struct {
   Tier int32
 }
 
-func (data *CharacterActivities) CurrentActivity(languageCode string) error {
-  return nil
-}
-
 func manifestActivityDefinition(languageCode string, activityHash uint32) (*DestinyActivity, error) {
   dataFile := fmt.Sprintf("%s-%s", manifestWorld, languageCode)
   db, err := manifestOpenData(dataFile)
@@ -101,4 +97,8 @@ func manifestActivityDefinition(languageCode string, activityHash uint32) (*Dest
 
 func (base *DestinyMilestoneActivity)Definition(languageCode string) (*DestinyActivity, error) {
   return manifestActivityDefinition(languageCode, base.ActivityHash)
+}
+
+func (base *CharacterActivities)ActivityDefinition(languageCode string) (*DestinyActivity, error) {
+  return manifestActivityDefinition(languageCode, base.CurrentActivityHash)
 }

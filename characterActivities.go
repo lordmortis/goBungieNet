@@ -21,7 +21,7 @@ type CharacterActivities struct {
   LastCompletedStoryHash uint32
 }
 
-func (data *SingleActivities)MostRecentCharacter() int64 {
+func (data *SingleActivities)MostRecentCharacterID() int64 {
   activityTime := time.Unix(0,0)
   var charID int64 = -1
 
